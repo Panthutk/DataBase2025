@@ -1,8 +1,8 @@
 # MongoDB Crash Course
 
-## Password
+## CRUD Operations
 
-oIyWdc26TslXkTj3
+---
 
 ## List all databases
 
@@ -16,19 +16,23 @@ db.adminCommand({ listDatabases: 1 })
 use classdb
 ```
 
-## Insert one document
+---
+
+## Create / Insert
+
+### Insert one document
 
 ```js
 db.movies.insertOne({ name: "Jurassic Park" })
 ```
 
-## Find all documents
+### Find all documents
 
 ```js
 db.movies.find()
 ```
 
-## Insert multiple documents
+### Insert multiple documents
 
 ```js
 db.movies.insertMany([
@@ -37,7 +41,7 @@ db.movies.insertMany([
 ])
 ```
 
-## Insert multiple students
+### Insert multiple students
 
 ```js
 db.students.insertMany([
@@ -47,7 +51,7 @@ db.students.insertMany([
 ])
 ```
 
-## Insert students with class arrays
+### Insert students with class arrays
 
 ```js
 db.students.insertMany([
@@ -57,80 +61,61 @@ db.students.insertMany([
 ])
 ```
 
-## Find by equality
+---
+
+## Read / Find
+
+### Find by equality
 
 ```js
 db.students.find({ name: "Sally" })
 db.students.find({ score: 84 })
 ```
 
-## Find documents containing a value in an array
+### Find documents containing a value in an array
 
 ```js
 db.students.find({ classes: 111 })
 ```
 
-## Find not equal
+### Find not equal
 
 ```js
 db.students.find({ score: { $ne: 84 } })
 ```
 
-## Find greater than or equal
+### Find greater / less than or equal
 
 ```js
 db.students.find({ score: { $gte: 84 } })
-```
-
-## Find greater than
-
-```js
 db.students.find({ score: { $gt: 84 } })
-```
-
-## Find lower than
-
-```js
 db.students.find({ score: { $lt: 84 } })
-```
-
-## Find lower than or equal
-
-```js
 db.students.find({ score: { $lte: 84 } })
 ```
 
-## Find where value is in a list ($in)
+### Find where value is in or not in a list
 
 ```js
 db.students.find({ name: { $in: ["Jane", "Sally"] } })
-```
-
-## Find where value is not in a list ($nin)
-
-```js
 db.students.find({ name: { $nin: ["Jane", "Sally"] } })
 ```
 
-## Specified complex find condition (can use operators like $lt, $gt with $elemMatch)
+### Complex find condition (can use operators like $lt, $gt with $elemMatch)
 
 ```js
 db.students.find({ classes: { $elemMatch: { $eq: 111 } } })
 ```
 
-## Check if field exists
+### Check if field exists or not
 
 ```js
 db.students.find({ classes: { $exists: true } })
-```
-
-## Check if field does not exist
-
-```js
 db.students.find({ classes: { $exists: false } })
 ```
 
-## Show / Hide fields (projection)
+---
+
+## Projection (Show / Hide fields)
 
 0 = hide, 1 = show
 
@@ -152,7 +137,9 @@ db.students.find(
 )
 ```
 
-## Order / Sorting
+---
+
+## Sorting and Limiting
 
 ### Decreasing order (max to min)
 
@@ -179,4 +166,116 @@ db.students.find(
   {},
   { score: 1, age: 1, _id: 0 }
 ).sort({ score: 1 })
+```
+
+---
+
+## Logical Conditions
+
+### AND condition
+
+```js
+db.students.find({ age: 17, score: 90 })
+```
+
+### OR condition
+
+```js
+db.students.find({ $or: [{ age: 18 }, { score: 90 }] })
+```
+
+### Range condition (greater than X and less than Y)
+
+```js
+db.students.find({ score: { $gte: 84, $lte: 85 } })
+```
+
+---
+
+## Update / Replace
+
+### Replace an entire document (Dangerous — replaces everything)
+
+```js
+db.students.replaceOne({ name: "Sally" }, { score: 89 })
+```
+
+⚠️ This **removes all previous fields** like `name`, `age`, and `classes`, leaving only `{ score: 89 }`.
+
+### Update one field safely (preserve other fields)
+
+```js
+db.students.updateOne(
+  { name: "Aaron" },
+  { $set: { score: 89 } }
+)
+```
+
+### Update multiple documents
+
+```js
+db.students.updateMany(
+  { score: { $lt: 85 } },
+  { $set: { status: "Needs Improvement" } }
+)
+```
+
+---
+
+## Delete
+
+### Delete one document
+
+```js
+db.students.deleteOne({ name: "Tomy" })
+```
+
+### Delete many documents
+
+```js
+db.students.deleteMany({ score: { $lt: 84 } })
+```
+
+```js
+db.students.deleteMany({classes:208})
+```
+
+---
+
+## Array and Numeric Updates
+
+### Push (add value to array)
+
+```js
+db.students.updateOne(
+  { name: "Carla" },
+  { $push: { classes: 333 } }
+)
+```
+
+### Add to set (avoid duplicates in array)
+
+```js
+db.students.updateOne(
+  { name: "Carla" },
+  { $addToSet: { classes: 333 } }
+)
+```
+
+### Increase numeric value
+
+```js
+db.students.updateOne(
+  { name: "Aaron" },
+  { $inc: { score: 2 } }
+)
+```
+
+### Decrease numeric value
+
+```js
+db.students.updateOne(
+  { name: "Aaron" },
+  { $inc: { score: -2 } }
+)
 ```
