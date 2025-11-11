@@ -1,16 +1,20 @@
 # MongoDB Crash Course
 
-## CRUD Operations
+# Exam allow only this material
+
+<https://www.mongodb.com/docs/development/>
 
 ---
 
-## List all databases
+## 1. DATABASE COMMANDS
+
+### List all databases
 
 ```js
 db.adminCommand({ listDatabases: 1 })
 ```
 
-## Create (or use existing) database
+### Create (or use existing) database
 
 ```js
 use classdb
@@ -18,18 +22,12 @@ use classdb
 
 ---
 
-## Create / Insert
+## 2. CREATE / INSERT
 
 ### Insert one document
 
 ```js
 db.movies.insertOne({ name: "Jurassic Park" })
-```
-
-### Find all documents
-
-```js
-db.movies.find()
 ```
 
 ### Insert multiple documents
@@ -63,7 +61,13 @@ db.students.insertMany([
 
 ---
 
-## Read / Find
+## 3. READ / FIND
+
+### Find all documents
+
+```js
+db.movies.find()
+```
 
 ### Find by equality
 
@@ -84,13 +88,13 @@ db.students.find({ classes: 111 })
 db.students.find({ score: { $ne: 84 } })
 ```
 
-### Find greater / less than or equal
+### Comparison operators
 
 ```js
-db.students.find({ score: { $gte: 84 } })
-db.students.find({ score: { $gt: 84 } })
-db.students.find({ score: { $lt: 84 } })
-db.students.find({ score: { $lte: 84 } })
+db.students.find({ score: { $gte: 84 } })   // Greater than or equal
+db.students.find({ score: { $gt: 84 } })    // Greater than
+db.students.find({ score: { $lt: 84 } })    // Less than
+db.students.find({ score: { $lte: 84 } })   // Less than or equal
 ```
 
 ### Find where value is in or not in a list
@@ -100,7 +104,7 @@ db.students.find({ name: { $in: ["Jane", "Sally"] } })
 db.students.find({ name: { $nin: ["Jane", "Sally"] } })
 ```
 
-### Complex find condition (can use operators like $lt, $gt with $elemMatch)
+### Complex find condition ($elemMatch)
 
 ```js
 db.students.find({ classes: { $elemMatch: { $eq: 111 } } })
@@ -115,7 +119,7 @@ db.students.find({ classes: { $exists: false } })
 
 ---
 
-## Projection (Show / Hide fields)
+## 4. PROJECTION (SHOW / HIDE FIELDS)
 
 0 = hide, 1 = show
 
@@ -139,38 +143,29 @@ db.students.find(
 
 ---
 
-## Sorting and Limiting
+## 5. SORTING AND LIMITING
 
 ### Decreasing order (max to min)
 
 ```js
-db.students.find(
-  {},
-  { score: 1, age: 1, _id: 0 }
-).sort({ score: -1 })
+db.students.find({}, { score: 1, age: 1, _id: 0 }).sort({ score: -1 })
 ```
 
 ### Decreasing order with limit
 
 ```js
-db.students.find(
-  {},
-  { score: 1, age: 1, _id: 0 }
-).sort({ score: -1 }).limit(4)
+db.students.find({}, { score: 1, age: 1, _id: 0 }).sort({ score: -1 }).limit(4)
 ```
 
 ### Increasing order (min to max)
 
 ```js
-db.students.find(
-  {},
-  { score: 1, age: 1, _id: 0 }
-).sort({ score: 1 })
+db.students.find({}, { score: 1, age: 1, _id: 0 }).sort({ score: 1 })
 ```
 
 ---
 
-## Logical Conditions
+## 6. LOGICAL CONDITIONS
 
 ### AND condition
 
@@ -184,7 +179,7 @@ db.students.find({ age: 17, score: 90 })
 db.students.find({ $or: [{ age: 18 }, { score: 90 }] })
 ```
 
-### Range condition (greater than X and less than Y)
+### Range condition
 
 ```js
 db.students.find({ score: { $gte: 84, $lte: 85 } })
@@ -192,17 +187,17 @@ db.students.find({ score: { $gte: 84, $lte: 85 } })
 
 ---
 
-## Update / Replace
+## 7. UPDATE / REPLACE
 
-### Replace an entire document (Dangerous — replaces everything)
+### Replace an entire document (Dangerous)
 
 ```js
 db.students.replaceOne({ name: "Sally" }, { score: 89 })
 ```
 
-⚠️ This **removes all previous fields** like `name`, `age`, and `classes`, leaving only `{ score: 89 }`.
+⚠️ This removes all old fields, leaving only `{ score: 89 }`.
 
-### Update one field safely (preserve other fields)
+### Update one field safely
 
 ```js
 db.students.updateOne(
@@ -222,7 +217,7 @@ db.students.updateMany(
 
 ---
 
-## Delete
+## 8. DELETE
 
 ### Delete one document
 
@@ -236,7 +231,7 @@ db.students.deleteOne({ name: "Tomy" })
 db.students.deleteMany({ score: { $lt: 84 } })
 ```
 
-### Delete documents by array value
+### Delete by array value
 
 ```js
 db.students.deleteMany({ classes: 208 })
@@ -244,7 +239,7 @@ db.students.deleteMany({ classes: 208 })
 
 ---
 
-## Array and Numeric Updates
+## 9. ARRAY AND NUMERIC UPDATES
 
 ### Push (add value to array)
 
@@ -255,7 +250,7 @@ db.students.updateOne(
 )
 ```
 
-### Add to set (avoid duplicates in array)
+### Add to set (avoid duplicates)
 
 ```js
 db.students.updateOne(
@@ -284,15 +279,15 @@ db.students.updateOne(
 
 ---
 
-## Nested Field Queries
+## 10. NESTED FIELD QUERIES
 
-### Find nested field value (example: `awards.wins` inside subdocument)
+### Find nested field value (e.g., `awards.wins`)
 
 ```js
 db.movies.find({ "awards.wins": 1 }).limit(2)
 ```
 
-### Nested query with specific field projection
+### Nested query with projection
 
 ```js
 db.movies.find(
@@ -300,3 +295,75 @@ db.movies.find(
   { title: 1, awards: 1, _id: 0 }
 ).limit(2)
 ```
+
+---
+
+## 11. COUNTING
+
+### Count documents matching a filter
+
+```js
+db.airbnb.find({ amenities: "Kitchen" }).count()
+```
+
+### Count with filter example
+
+```js
+db.airbnb.find({ "address.country": "Canada", bed_type: "Futon" }).count()
+```
+
+---
+
+## 12. AGGREGATION AND GROUPING
+
+### Group by a field (simple)
+
+```js
+db.students.aggregate([
+  { $group: { _id: "$age" } }
+])
+```
+
+### Group and calculate total score
+
+```js
+db.students.aggregate([
+  { $group: { _id: "$age", total_score: { $sum: "$score" } } }
+])
+```
+
+### Group and calculate average score
+
+```js
+db.students.aggregate([
+  { $group: { _id: "$age", avg_score: { $avg: "$score" } } }
+])
+```
+
+### Count items per group
+
+```js
+db.students.aggregate([
+  { $group: { _id: "$age", count_items: { $sum: 1 } } }
+])
+```
+
+### Average with addition
+
+```js
+db.students.aggregate([
+  { $group: { _id: "$age", avg_score: { $avg: { $add: ["$score", 2] } } } }
+])
+```
+
+### Match + Group + Sort example
+
+```js
+db.students.aggregate([
+  { $match: { score: { $gte: 80 } } },
+  { $group: { _id: "$age", total_score: { $sum: "$score" } } },
+  { $sort: { total_score: -1 } }
+])
+```
+
+---
