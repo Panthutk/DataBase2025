@@ -129,3 +129,54 @@ db.students.find({ classes: { $exists: true } })
 ```js
 db.students.find({ classes: { $exists: false } })
 ```
+
+## Show / Hide fields (projection)
+
+0 = hide, 1 = show
+
+### Filtered example
+
+```js
+db.students.find(
+  { classes: { $exists: false } },
+  { score: 1, age: 1, _id: 0 }
+)
+```
+
+### Without filter (show all)
+
+```js
+db.students.find(
+  {},
+  { score: 1, age: 1, _id: 0 }
+)
+```
+
+## Order / Sorting
+
+### Decreasing order (max to min)
+
+```js
+db.students.find(
+  {},
+  { score: 1, age: 1, _id: 0 }
+).sort({ score: -1 })
+```
+
+### Decreasing order with limit
+
+```js
+db.students.find(
+  {},
+  { score: 1, age: 1, _id: 0 }
+).sort({ score: -1 }).limit(4)
+```
+
+### Increasing order (min to max)
+
+```js
+db.students.find(
+  {},
+  { score: 1, age: 1, _id: 0 }
+).sort({ score: 1 })
+```
