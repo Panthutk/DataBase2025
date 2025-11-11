@@ -236,8 +236,10 @@ db.students.deleteOne({ name: "Tomy" })
 db.students.deleteMany({ score: { $lt: 84 } })
 ```
 
+### Delete documents by array value
+
 ```js
-db.students.deleteMany({classes:208})
+db.students.deleteMany({ classes: 208 })
 ```
 
 ---
@@ -278,4 +280,23 @@ db.students.updateOne(
   { name: "Aaron" },
   { $inc: { score: -2 } }
 )
+```
+
+---
+
+## Nested Field Queries
+
+### Find nested field value (example: `awards.wins` inside subdocument)
+
+```js
+db.movies.find({ "awards.wins": 1 }).limit(2)
+```
+
+### Nested query with specific field projection
+
+```js
+db.movies.find(
+  { "awards.wins": 1 },
+  { title: 1, awards: 1, _id: 0 }
+).limit(2)
 ```
