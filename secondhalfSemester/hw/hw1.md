@@ -74,11 +74,90 @@ db.routes.aggregate([
 ## Q7 From which source airport can you fly to the most destination airports?
 
 ```js
-db.routes.aggregate([{$group:{_id:"$src_airport",destinations:{$addToSet:"$dst_airport"}}},{$addFields:{num_destinations:{$size:"$destinations"}}},{$sort:{num_destinations:-1}},{$limit:1},{$project:{_id:0,Source_Airport:"$_id",Num_Destinations:"$num_destinations"}}])
+db.routes.aggregate([
+  {
+    $group: {
+      _id: "$src_airport",
+      destinations: { $addToSet: "$dst_airport" }
+    }
+  },
+
+  {
+    $addFields: {
+      num_destinations: { $size: "$destinations" }
+    }
+  },
+
+  {
+    $sort: { num_destinations: -1 }
+  },
+
+  {
+    $limit: 1
+  },
+
+  {
+    $project: {
+      _id: 0,
+      Source_Airport: "$_id",
+      Num_Destinations: "$num_destinations"
+    }
+  }
+]);
+
 ```
 
 ## Which 5 airlines have the lowest percentage of non-stop routes? (The percentage is calculated against the total number of routes for each airline. If an airline only has non-stop routes, this should be 100%.)
 
 ``` js
-db.routes.aggregate([{$group:{_id:"$airline.name",Total_Routes:{$sum:1},Non_Stop_Routes:{$sum:{$cond:[{$eq:["$stops",0]},1,0]}}}},{$addFields:{Non_Stop_Percentage:{$multiply:[{$divide:["$Non_Stop_Routes","$Total_Routes"]},100]}}},{$sort:{Non_Stop_Percentage:1}},{$limit:5},{$project:{_id:0,Airline_Name:"$_id","Non-Stop Percentage":{$concat:[{$toString:{$round:["$Non_Stop_Percentage",2]}},"%"]}}}])
+db.routes.aggregate([
+  {
+    $group: {
+      _id: "$airline.name",
+      Total_Routes: { $sum: 1 },
+      Non_Stop_Routes: {
+        $sum: {
+          $cond: [
+            { $eq: ["$stops", 0] },   // if stops == 0 → count as non-stop
+            1,
+            0
+          ]
+        }
+      }
+    }
+  },
+
+  {
+    $addFields: {
+      Non_Stop_Percentage: {
+        $multiply: [
+          { $divide: ["$Non_Stop_Routes", "$Total_Routes"] },
+          100
+        ]
+      }
+    }
+  },
+
+  {
+    $sort: { Non_Stop_Percentage: 1 } // sort ascending
+  },
+
+  {
+    $limit: 5 // lowest 5 airlines
+  },
+
+  {
+    $project: {
+      _id: 0,
+      Airline_Name: "$_id",
+      "Non-Stop Percentage": {
+        $concat: [
+          { $toString: { $round: ["$Non_Stop_Percentage", 2] } },
+          "%"
+        ]
+      }
+    }
+  }
+]);
+
 ```
